@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Debug Invio Posizione</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      text-align: center;
+      padding: 2em;
+      color: #333;
+    }
+    .card {
+      background: white;
+      padding: 2em;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: auto;
+    }
+    pre {
+      text-align: left;
+      background: #f9f9f9;
+      padding: 1em;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+    .success {
+      color: #27ae60;
+    }
+    .error {
+      color: #e74c3c;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Debug Invio Posizione GPS</h2>
+    <p id="status">Sto cercando la tua posizione...</p>
+    <pre id="debug"></pre>
+  </div>
+
+  <script>
+    const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSefwDwRAc8fJBECFiz1MfR9nazBANQGT_i8JKB5uH_zXr4qWg/formResponse";
+    const latField = "entry.564083252";
+    const lonField = "entry.1574647340";
+
+    const statusEl = document.getElementById("status");
+    const debugEl = document.getElementById("debug");
+
+    navigator.geolocation.getCurrentPosition(function(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      const submitUrl = `${formUrl}?${latField}=${lat}&${lonField}=${lon}`;
+      debugEl.textContent = "URL di invio generato:\n" + submitUrl;
+
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = submitUrl;
+      document.body.appendChild(iframe);
+
+      statusEl.innerHTML = "<strong class='success'>Posizione inviata!</strong>";
+    }, function(error) {
+      statusEl.innerHTML = "<strong class='error'>Errore: GPS non disponibile</strong>";
+      debugEl.textContent = error.message;
+    });
+  </script>
+</body>
+</html>
